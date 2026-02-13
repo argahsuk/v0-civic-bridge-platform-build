@@ -1,4 +1,5 @@
 import mongoose, { Schema, type Document } from "mongoose";
+import { VALID_STATUSES, CATEGORIES } from "@/lib/constants";
 
 export interface IStatusHistoryEntry {
   status: string;
@@ -60,23 +61,4 @@ const IssueSchema = new Schema<IIssue>({
 
 export const Issue = mongoose.models.Issue || mongoose.model<IIssue>("Issue", IssueSchema);
 
-export const VALID_STATUSES = [
-  "Submitted",
-  "Acknowledged",
-  "Assigned",
-  "In Progress",
-  "Resolved",
-  "Verified",
-] as const;
-
-export const CATEGORIES = [
-  "Roads & Potholes",
-  "Water Supply",
-  "Electricity",
-  "Sanitation",
-  "Public Safety",
-  "Parks & Recreation",
-  "Building & Zoning",
-  "Noise Complaint",
-  "Other",
-] as const;
+export { VALID_STATUSES, CATEGORIES } from "@/lib/constants";

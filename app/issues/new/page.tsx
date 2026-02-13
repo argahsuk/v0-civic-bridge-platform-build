@@ -17,7 +17,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { CATEGORIES } from "@/lib/models/issue";
+import { CATEGORIES } from "@/lib/constants";
 import { Loader2, Upload, X, ImageIcon } from "lucide-react";
 
 export default function NewIssuePage() {
