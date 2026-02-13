@@ -23,8 +23,6 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Invalid role" }, { status: 400 });
     }
 
-    console.log("[v0] MONGODB_URI set:", !!process.env.MONGODB_URI);
-    console.log("[v0] MONGODB_URI value prefix:", process.env.MONGODB_URI?.substring(0, 20));
     await connectDB();
 
     const existingUser = await User.findOne({ email: email.toLowerCase() });

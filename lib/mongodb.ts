@@ -25,16 +25,20 @@ export async function connectDB() {
   }
 
   const uri = process.env.MONGODB_URI;
-  console.log("[v0] connectDB called, uri exists:", !!uri, "uri starts with:", uri?.substring(0, 14));
 
   if (!uri || !uri.startsWith("mongodb")) {
     throw new Error(
-      "MONGODB_URI is missing or invalid. Please set a valid MongoDB Atlas connection string (mongodb+srv://...) in your project Vars."
+      "MONGODB_URI is missing or invalid. Please set a valid MongoDB Atlas connection string (mongodb+srv://...) in the Vars section of the sidebar."
+    );
+  }
+
+  if (uri.includes("localhost") || uri.includes("127.0.0.1")) {
+    throw new Error(
+      "MONGODB_URI points to localhost which is not available in this environment. Please use a MongoDB Atlas cloud connection string (mongodb+srv://...). You can get one free at https://cloud.mongodb.com"
     );
   }
 
   if (!cached.promise) {
-    console.log("[v0] Creating new mongoose connection to:", uri.substring(0, 30) + "...");
     cached.promise = mongoose.connect(uri, {
       bufferCommands: false,
       serverSelectionTimeoutMS: 10000,
