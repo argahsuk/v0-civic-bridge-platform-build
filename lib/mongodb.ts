@@ -25,14 +25,16 @@ export async function connectDB() {
   }
 
   const uri = process.env.MONGODB_URI;
+  console.log("[v0] connectDB called, uri exists:", !!uri, "uri starts with:", uri?.substring(0, 14));
 
-  if (!uri) {
+  if (!uri || !uri.startsWith("mongodb")) {
     throw new Error(
-      "Please define the MONGODB_URI environment variable in your project settings."
+      "MONGODB_URI is missing or invalid. Please set a valid MongoDB Atlas connection string (mongodb+srv://...) in your project Vars."
     );
   }
 
   if (!cached.promise) {
+    console.log("[v0] Creating new mongoose connection to:", uri.substring(0, 30) + "...");
     cached.promise = mongoose.connect(uri, {
       bufferCommands: false,
       serverSelectionTimeoutMS: 10000,

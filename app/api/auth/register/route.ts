@@ -23,6 +23,8 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Invalid role" }, { status: 400 });
     }
 
+    console.log("[v0] MONGODB_URI set:", !!process.env.MONGODB_URI);
+    console.log("[v0] MONGODB_URI value prefix:", process.env.MONGODB_URI?.substring(0, 20));
     await connectDB();
 
     const existingUser = await User.findOne({ email: email.toLowerCase() });
@@ -46,6 +48,12 @@ export async function POST(request: Request) {
     });
   } catch (error) {
     console.error("Register error:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    const message =
+      error instanceof Error && error.message.includes("MONGODB_URI")
+        ? "Database not configured. Please set the MONGODB_URI environment variable."
+        : error instanceof Error && error.message.includes("ECONNREFUSED")
+          ? "Cannot connect to database. Please check your MONGODB_URI environment variable points to a valid MongoDB Atlas cluster."
+          : "Internal server error";
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }
