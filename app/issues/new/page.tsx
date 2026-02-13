@@ -3,7 +3,6 @@
 import { useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { useAuth } from "@/hooks/use-auth";
 import { Navbar } from "@/components/navbar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -22,7 +21,6 @@ import { Loader2, Upload, X, ImageIcon } from "lucide-react";
 
 export default function NewIssuePage() {
   const router = useRouter();
-  const { user, isLoading } = useAuth();
   const [loading, setLoading] = useState(false);
   const [category, setCategory] = useState("");
   const [severity, setSeverity] = useState("");
@@ -84,11 +82,6 @@ export default function NewIssuePage() {
       toast.error("Something went wrong");
       setLoading(false);
     }
-  }
-
-  if (!isLoading && !user) {
-    router.push("/login");
-    return null;
   }
 
   return (

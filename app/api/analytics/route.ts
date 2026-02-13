@@ -1,18 +1,11 @@
 import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongodb";
 import { Issue } from "@/lib/models/issue";
-import { getSession } from "@/lib/auth";
 
 export async function GET() {
   try {
-    const session = await getSession();
-    if (!session || session.role !== "official") {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
-    }
-
     await connectDB();
 
-    // Total issues
     const totalIssues = await Issue.countDocuments();
     const openIssues = await Issue.countDocuments({
       status: { $nin: ["Resolved", "Verified"] },

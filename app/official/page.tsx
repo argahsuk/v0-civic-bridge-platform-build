@@ -2,8 +2,6 @@
 
 import { useState } from "react";
 import useSWR from "swr";
-import { useRouter } from "next/navigation";
-import { useAuth } from "@/hooks/use-auth";
 import { Navbar } from "@/components/navbar";
 import { SeverityBadge } from "@/components/severity-badge";
 import { StatusBadge } from "@/components/status-badge";
@@ -11,7 +9,7 @@ import { getSlaInfo, getSlaColorClass } from "@/lib/sla";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import {
   Select,
   SelectContent,
@@ -58,8 +56,6 @@ interface IssueData {
 }
 
 export default function OfficialPage() {
-  const { user, isLoading: authLoading } = useAuth();
-  const router = useRouter();
   const [statusFilter, setStatusFilter] = useState("all");
 
   const params = new URLSearchParams();
@@ -72,11 +68,6 @@ export default function OfficialPage() {
   );
 
   const issues = data?.issues || [];
-
-  if (!authLoading && (!user || user.role !== "official")) {
-    router.push("/login");
-    return null;
-  }
 
   const totalIssues = issues.length;
   const openIssues = issues.filter(

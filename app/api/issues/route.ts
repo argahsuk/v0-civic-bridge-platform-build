@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongodb";
 import { Issue } from "@/lib/models/issue";
-import { getSession } from "@/lib/auth";
 
 export async function GET(request: Request) {
   try {
@@ -66,11 +65,6 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   try {
-    const session = await getSession();
-    if (!session) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
     const body = await request.json();
     const { title, description, category, severity, image, location } = body;
 
@@ -88,12 +82,10 @@ export async function POST(request: Request) {
       image: image || undefined,
       location,
       status: "Submitted",
-      createdBy: session.userId,
       upvotes: [],
       statusHistory: [
         {
           status: "Submitted",
-          updatedBy: session.userId,
           note: "Issue submitted",
           timestamp: new Date(),
         },

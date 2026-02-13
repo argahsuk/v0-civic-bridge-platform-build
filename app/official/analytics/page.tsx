@@ -1,11 +1,8 @@
 "use client";
 
 import useSWR from "swr";
-import { useRouter } from "next/navigation";
-import { useAuth } from "@/hooks/use-auth";
 import { Navbar } from "@/components/navbar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import {
   BarChart,
   Bar,
@@ -62,14 +59,7 @@ interface AnalyticsData {
 }
 
 export default function AnalyticsPage() {
-  const { user, isLoading: authLoading } = useAuth();
-  const router = useRouter();
   const { data, isLoading } = useSWR<AnalyticsData>("/api/analytics", fetcher);
-
-  if (!authLoading && (!user || user.role !== "official")) {
-    router.push("/login");
-    return null;
-  }
 
   return (
     <>

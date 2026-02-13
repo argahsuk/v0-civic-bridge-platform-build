@@ -2,7 +2,6 @@
 
 import { use, useState } from "react";
 import useSWR from "swr";
-import { useAuth } from "@/hooks/use-auth";
 import { Navbar } from "@/components/navbar";
 import { SeverityBadge } from "@/components/severity-badge";
 import { StatusBadge } from "@/components/status-badge";
@@ -54,7 +53,6 @@ export default function IssueDetailPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = use(params);
-  const { user } = useAuth();
   const [upvoting, setUpvoting] = useState(false);
 
   const { data, isLoading, mutate } = useSWR<{ issue: IssueDetail }>(
@@ -65,10 +63,6 @@ export default function IssueDetailPage({
   const issue = data?.issue;
 
   async function handleUpvote() {
-    if (!user) {
-      toast.error("Please sign in to upvote");
-      return;
-    }
     setUpvoting(true);
     try {
       const res = await fetch(`/api/issues/${id}/upvote`, { method: "POST" });
@@ -110,7 +104,6 @@ export default function IssueDetailPage({
   }
 
   const sla = getSlaInfo(issue.createdAt);
-  const hasUpvoted = user ? issue.upvotes.includes(user.userId) : false;
   const isResolved = issue.status === "Resolved" || issue.status === "Verified";
 
   return (
@@ -168,7 +161,7 @@ export default function IssueDetailPage({
                 <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground pt-2 border-t border-border">
                   <span className="flex items-center gap-1.5">
                     <UserIcon className="h-4 w-4" />
-                    {issue.createdBy?.name || "Unknown"}
+                    {issue.createdBy?.name || "Anonymous"}
                   </span>
                   <span className="flex items-center gap-1.5">
                     <Calendar className="h-4 w-4" />
@@ -211,20 +204,17 @@ export default function IssueDetailPage({
                   <p className="text-sm text-muted-foreground">Community Upvotes</p>
                   <Button
                     onClick={handleUpvote}
-                    disabled={upvoting || !user}
-                    variant={hasUpvoted ? "default" : "outline"}
+                    disabled={upvoting}
+                    variant="outline"
                     className="w-full gap-2"
                   >
                     {upvoting ? (
                       <Loader2 className="h-4 w-4 animate-spin" />
                     ) : (
-                      <ThumbsUp className={cn("h-4 w-4", hasUpvoted && "fill-current")} />
+                      <ThumbsUp className="h-4 w-4" />
                     )}
-                    {hasUpvoted ? "Upvoted" : "Upvote"}
+                    Upvote
                   </Button>
-                  {!user && (
-                    <p className="text-xs text-muted-foreground">Sign in to upvote</p>
-                  )}
                 </div>
               </CardContent>
             </Card>

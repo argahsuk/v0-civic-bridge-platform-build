@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { useAuth } from "@/hooks/use-auth";
 import { Navbar } from "@/components/navbar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -56,8 +55,6 @@ const features = [
 ];
 
 export default function HomePage() {
-  const { user } = useAuth();
-
   return (
     <>
       <Navbar />
@@ -80,28 +77,17 @@ export default function HomePage() {
               prioritization.
             </p>
             <div className="mt-8 flex items-center justify-center gap-4">
-              {user ? (
-                <Link href="/dashboard">
-                  <Button size="lg" className="gap-2">
-                    Go to Dashboard
-                    <ArrowRight className="h-4 w-4" />
-                  </Button>
-                </Link>
-              ) : (
-                <>
-                  <Link href="/register">
-                    <Button size="lg" className="gap-2">
-                      Get Started
-                      <ArrowRight className="h-4 w-4" />
-                    </Button>
-                  </Link>
-                  <Link href="/dashboard">
-                    <Button variant="outline" size="lg">
-                      View Dashboard
-                    </Button>
-                  </Link>
-                </>
-              )}
+              <Link href="/dashboard">
+                <Button size="lg" className="gap-2">
+                  View Dashboard
+                  <ArrowRight className="h-4 w-4" />
+                </Button>
+              </Link>
+              <Link href="/issues/new">
+                <Button variant="outline" size="lg">
+                  Report an Issue
+                </Button>
+              </Link>
             </div>
           </div>
         </section>
@@ -143,11 +129,11 @@ export default function HomePage() {
               Ready to improve your community?
             </h2>
             <p className="mt-3 text-muted-foreground">
-              Join CivicBridge today and start making a real difference in local governance.
+              Start reporting issues and tracking civic progress today.
             </p>
             <div className="mt-6 flex items-center justify-center gap-3">
-              <Link href="/register">
-                <Button size="lg">Create Account</Button>
+              <Link href="/issues/new">
+                <Button size="lg">Report an Issue</Button>
               </Link>
               <Link href="/dashboard">
                 <Button variant="outline" size="lg">

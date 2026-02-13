@@ -1,21 +1,13 @@
 import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongodb";
-import { Issue, VALID_STATUSES } from "@/lib/models/issue";
-import { getSession } from "@/lib/auth";
+import { Issue } from "@/lib/models/issue";
+import { VALID_STATUSES } from "@/lib/constants";
 
 export async function PATCH(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const session = await getSession();
-    if (!session || session.role !== "official") {
-      return NextResponse.json(
-        { error: "Only officials can update status" },
-        { status: 403 }
-      );
-    }
-
     const { id } = await params;
     const { status, note, image } = await request.json();
 
@@ -33,7 +25,6 @@ export async function PATCH(
     issue.status = status;
     issue.statusHistory.push({
       status,
-      updatedBy: session.userId,
       note: note || "",
       timestamp: new Date(),
     });
