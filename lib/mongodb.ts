@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 interface MongooseCache {
   conn: typeof mongoose | null;
   promise: Promise<typeof mongoose> | null;
+  uri: string | null;
 }
 
 declare global {
@@ -13,6 +14,7 @@ declare global {
 const cached: MongooseCache = global.mongooseCache ?? {
   conn: null,
   promise: null,
+  uri: null,
 };
 
 if (!global.mongooseCache) {
@@ -20,10 +22,6 @@ if (!global.mongooseCache) {
 }
 
 export async function connectDB() {
-  if (cached.conn) {
-    return cached.conn;
-  }
-
   const uri = process.env.MONGODB_URI;
 
   if (!uri || !uri.startsWith("mongodb")) {
@@ -32,16 +30,24 @@ export async function connectDB() {
     );
   }
 
-  if (uri.includes("localhost") || uri.includes("127.0.0.1")) {
-    throw new Error(
-      "MONGODB_URI points to localhost which is not available in this environment. Please use a MongoDB Atlas cloud connection string (mongodb+srv://...). You can get one free at https://cloud.mongodb.com"
-    );
+  // If URI changed (e.g. user updated env var), reset the cached connection
+  if (cached.uri && cached.uri !== uri) {
+    cached.conn = null;
+    cached.promise = null;
+    cached.uri = null;
+    // Disconnect previous connection if any
+    try { await mongoose.disconnect(); } catch { /* ignore */ }
+  }
+
+  if (cached.conn) {
+    return cached.conn;
   }
 
   if (!cached.promise) {
+    cached.uri = uri;
     cached.promise = mongoose.connect(uri, {
       bufferCommands: false,
-      serverSelectionTimeoutMS: 10000,
+      serverSelectionTimeoutMS: 15000,
     });
   }
 
@@ -49,6 +55,7 @@ export async function connectDB() {
     cached.conn = await cached.promise;
   } catch (e) {
     cached.promise = null;
+    cached.uri = null;
     throw e;
   }
 
